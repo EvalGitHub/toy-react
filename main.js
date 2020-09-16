@@ -10,9 +10,9 @@ class MyComponent extends Component {
   }
   render() {
     return <div>
-      <h1>my component</h1>
+      <h1 id="h1">my component</h1>
+      <button class="tom" onclick={() => {this.setState({a: this.state.a++}) }}>addddd</button>
       <span>{this.state.a.toString()}  </span>
-      {this.children}
     </div>
   }
 }

@@ -5,7 +5,11 @@ class ElementWrapper {
     this.root = document.createElement(type);
   }
   setAttribute(name, value) {
-    this.root.setAttribute(name, value);
+    if (name.match(/^on([\s|\S]+)$/)) {// 事件特殊处理 // RegExp.$1是小括号中匹配的值
+      this.root.addEventListener(RegExp.$1.replace(/^[\s\S]/, c => c.toLowerCase()), value);
+    } else {
+      this.root.setAttribute(name, value);
+    }
   }
   appendChild(component) {
     let range = document.createRange();
@@ -36,6 +40,7 @@ export class Component {
     this.props = Object.create(null);
     this.children = [];
     this._root = null;
+    this._range = null;
   }
   setAttribute(name, value) {
     this.props[name] = value;
@@ -44,7 +49,31 @@ export class Component {
     this.children.push(component);
   }
   [RENDER_TO_DOM](range) {
+    this._range = range;
     this.render().[RENDER_TO_DOM](range);
+  }
+  rerender() {
+    this._range.deleteContents();
+    this[RENDER_TO_DOM](this._range);
+  }
+  setState(newState) {
+    if (this.state === null || typeof this.state !== 'object') {
+      this.state = newState;
+      this.rerender();
+      return;
+    }
+    let merge = (oldState, newState) {
+      for(let p in newState) {
+        if (oldState[p] === null || typeof oldState[p] !== 'object') {
+          oldState[p] = newState[p];
+        } esle {
+          merge(this.setState, newState) 
+        }
+      }
+    }
+    merge(this.setState, newState) 
+    this.rerender();
+    return;
   }
  /*  get root() {
     if (!this._root) {
